@@ -13,9 +13,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by shobhana on 09/04/16.
- */
+
 public class SendCoordinates {
 
     String message;
@@ -44,7 +42,7 @@ public class SendCoordinates {
         @Override
         protected String doInBackground(String... params)
         {
-            String JsonResponse = null;
+            String JsonResponse ;
             String PayloadData=params[0];
 
             HttpURLConnection connection = null;
@@ -56,7 +54,7 @@ public class SendCoordinates {
                 connection = (HttpURLConnection) url.openConnection();
 
                 connection.setDoOutput(true);
-                // is output buffer writter
+                // is output buffer writer
                 connection.setRequestMethod("POST");
 
                 Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));

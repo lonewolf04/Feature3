@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity  {
 
     private void sendLatLng(String coordinates){
 
-        String message="message="+coordinates+"&phonenumber="+mPhoneNumber;
+        String message="location="+coordinates+"&phonenumber="+mPhoneNumber;
 
         System.out.println(coordinates);//null value
         SendCoordinates object=new SendCoordinates(message);
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity  {
                 connection = (HttpURLConnection) url.openConnection();
 
                 connection.setDoOutput(true);
-                // is output buffer writter
+                // is output buffer writer
                 connection.setRequestMethod("POST");
 
                 Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));

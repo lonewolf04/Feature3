@@ -100,7 +100,6 @@ public class RegistrationIntentService extends IntentService {
 
 
             sendRegistrationToServer(token);
-            subscribeTopics(token);
 
 
             sharedPreferences.edit().putBoolean(TokenStatus.SENT_TOKEN_TO_SERVER, true).apply();
@@ -241,11 +240,6 @@ public class RegistrationIntentService extends IntentService {
 
     }
 
-    private void subscribeTopics(String token) throws IOException {
-        GcmPubSub pubSub = GcmPubSub.getInstance(this);
-        for (String topic : TOPICS) {
-            pubSub.subscribe(token, "/topics/" + topic, null);
-        }
-    }
+
 
 }

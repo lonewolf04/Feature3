@@ -9,9 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
-/**
- * Created by shobhana on 10/04/16.
- */
+
 public class Gps {
 
     private LocationManager mlocation;
@@ -34,12 +32,14 @@ public class Gps {
 
         mlocation = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-        Criteria criteria = new Criteria();
+        /*Criteria criteria = new Criteria();
         provider = mlocation.getBestProvider(criteria, false);
         llocation = mlocation.getLastKnownLocation(provider);
 
-        System.out.println("location"+llocation);
-        lastLocation=llocation.getLatitude()+","+llocation.getLongitude();
+        System.out.println("location "+llocation);
+
+        if(llocation!=null)
+            lastLocation=llocation.getLatitude()+","+llocation.getLongitude();*/
 
         nlocation = new gpsLocation();
 
@@ -60,11 +60,11 @@ public class Gps {
 
     public String getCoordinates(){
 
-        if(latlng!=null)
+        //if(latlng!=null)
             return latlng;
 
-        else
-            return lastLocation;
+        //else
+          //  return lastLocation;
     }
 
     private class gpsLocation implements LocationListener{
