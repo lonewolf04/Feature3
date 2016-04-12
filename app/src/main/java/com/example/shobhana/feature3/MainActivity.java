@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         text = (EditText) findViewById(R.id.text);
 
-        mlocation = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        mlocation = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
 
         Criteria criteria = new Criteria();
@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 
             latlng=lat+","+lng;
             System.out.println("latlng"+latlng);
-            Toast.makeText(null,latlng,Toast.LENGTH_LONG).show();
+            //Toast.makeText(null,latlng,Toast.LENGTH_LONG).show();
 
 
         }
