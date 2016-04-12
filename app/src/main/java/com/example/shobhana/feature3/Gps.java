@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
 
-public class Gps {
+public class Gps  {
 
     private LocationManager mlocation;
     private LocationListener nlocation;
@@ -18,8 +18,8 @@ public class Gps {
 
     String provider = "";
     Context context;
-    double lat,lng;
-    String latlng,lastLocation;
+    double lat, lng;
+    String latlng, lastLocation;
 
     public Gps(Context context) {
 
@@ -32,16 +32,17 @@ public class Gps {
 
         mlocation = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-        /*Criteria criteria = new Criteria();
+        Criteria criteria = new Criteria();
         provider = mlocation.getBestProvider(criteria, false);
         llocation = mlocation.getLastKnownLocation(provider);
 
-        System.out.println("location "+llocation);
-
-        if(llocation!=null)
-            lastLocation=llocation.getLatitude()+","+llocation.getLongitude();*/
+        System.out.println("location " + llocation);
 
         nlocation = new gpsLocation();
+
+        if (llocation != null) {
+            lastLocation = llocation.getLatitude() + "," + llocation.getLongitude();
+        }
 
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -53,25 +54,26 @@ public class Gps {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mlocation.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, nlocation);
+        mlocation.requestLocationUpdates(provider, 5000, 2, nlocation);
 
 
     }
 
+
+
     public String getCoordinates(){
 
-        //if(latlng!=null)
+        if(latlng!=null)
             return latlng;
 
-        //else
-          //  return lastLocation;
+        else
+            return lastLocation;
     }
 
     private class gpsLocation implements LocationListener{
 
         //all overriden method definitions are auto generated
 
-        String coordinates;
 
         @Override
         public void onLocationChanged(Location location) {

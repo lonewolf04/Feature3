@@ -1,5 +1,7 @@
 package com.example.shobhana.feature3;
 
+import android.*;
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
@@ -44,14 +47,22 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     EditText text;
     String textMsg;
-    String mPhoneNumber="9844116260";
+    String mPhoneNumber = "9844116260";
+    private LocationManager mlocation;
+    private LocationListener nlocation;
+    private Location llocation;
+
+    String provider = "";
+    Context context;
+    double lat, lng;
+    String latlng, lastLocation;
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private ProgressBar mRegistrationProgressBar;
@@ -72,12 +83,40 @@ public class MainActivity extends AppCompatActivity  {
         setSupportActionBar(toolbar);*/
 
         findViewById(R.id.button).setOnClickListener(handleClick);
-        findViewById(R.id.lbutton).setOnClickListener(handleClick1);
+        //findViewById(R.id.lbutton).setOnClickListener(handleClick1);
 
         //Gps gpsObject=new Gps(this);
 
 
         text = (EditText) findViewById(R.id.text);
+
+        mlocation = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+
+        Criteria criteria = new Criteria();
+        provider = mlocation.getBestProvider(criteria, false);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        llocation = mlocation.getLastKnownLocation(provider);
+
+        System.out.println("location " + llocation);
+
+        nlocation = new gpsLocation();
+
+        if (llocation != null) {
+            lastLocation = llocation.getLatitude() + "," + llocation.getLongitude();
+        }
+
+        mlocation.requestLocationUpdates(provider, 5000, 2, nlocation);
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -144,7 +183,7 @@ public class MainActivity extends AppCompatActivity  {
         }
     };
 
-    private View.OnClickListener handleClick1 = new View.OnClickListener() {
+    /*private View.OnClickListener handleClick1 = new View.OnClickListener() {
         public void onClick(View arg0) {
             Button btn = (Button) arg0;
 
@@ -156,17 +195,17 @@ public class MainActivity extends AppCompatActivity  {
             sendLatLng(coordinates);
 
         }
-    };
+    };*/
 
 
-    private void sendLatLng(String coordinates){
+    /*private void sendLatLng(String coordinates){
 
         String message="location="+coordinates+"&phonenumber="+mPhoneNumber;
 
         System.out.println(coordinates);//null value
         SendCoordinates object=new SendCoordinates(message);
         object.init();
-    }
+    }*/
 
     @Override
     protected void onResume() {
@@ -197,7 +236,8 @@ public class MainActivity extends AppCompatActivity  {
         String message=null;
 
         message="message="+textMsg+"&phonenumber="+mPhoneNumber;
-        new SendMessage().execute(message);
+        SendMessage object=new SendMessage(message);
+        object.init();
 
 
     }
@@ -210,6 +250,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     @Override
+    //system generated
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -270,6 +311,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     @Override
+    //System generated
     public void onStop() {
         super.onStop();
 
@@ -291,103 +333,42 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
-    class SendMessage extends AsyncTask<String,String,String> {
 
-        //This is the thread which handles data transfer:Required so that UI will not freeze
+    private class gpsLocation implements LocationListener{
 
-
-        // private static final String TAG = " ";
-
-        /** Code performing Http connection and POST request to server
-         * is implemented here */
-        @Override
-        protected String doInBackground(String... params)
-        {
-            String JsonResponse = null;
-            String PayloadData=params[0];
-
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-            try
-            {
-                URL url = new URL("http://seteambackend-saimadhav.rhcloud.com/send_message/");
-
-                connection = (HttpURLConnection) url.openConnection();
-
-                connection.setDoOutput(true);
-                // is output buffer writer
-                connection.setRequestMethod("POST");
-
-                Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-                writer.write(PayloadData);
-                writer.close();
-                PayloadData="";
-                int errorCode = connection.getResponseCode();
-                System.out.println("GetErrorStream " + errorCode);
-                InputStream inputStream = connection.getInputStream();
-                //input stream
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String inputLine;
-                while ((inputLine = reader.readLine()) != null)
-                    buffer.append(inputLine + "\n");
-                if (buffer.length() == 0)
-                {
-
-                    return null;
-                }
-                JsonResponse = buffer.toString();
-//response data
-
-                Log.i("Server response", JsonResponse);
-
-                // System.out.println("response: "+JsonResponse);
-                return JsonResponse;
-
-
-
-
-
-
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-            finally
-            {
-                if (connection != null) {
-
-                    connection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-
-                        reader.close();
-                    } catch (final IOException e) {
-
-                        Log.e(TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            return null;
-        }
+        //all overriden method definitions are auto generated
 
 
         @Override
-        protected void onPostExecute(String s) {
+        public void onLocationChanged(Location location) {
 
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
+            lat=location.getLatitude();
+            lng=location.getLongitude();
+
+            latlng=lat+","+lng;
+            System.out.println("latlng"+latlng);
+            Toast.makeText(null,latlng,Toast.LENGTH_LONG).show();
 
 
         }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
 
     }
-
 
 
 
