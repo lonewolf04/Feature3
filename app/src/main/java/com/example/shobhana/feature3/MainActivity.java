@@ -90,33 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         text = (EditText) findViewById(R.id.text);
 
-        mlocation = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
-
-        Criteria criteria = new Criteria();
-        provider = mlocation.getBestProvider(criteria, false);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        llocation = mlocation.getLastKnownLocation(provider);
-
-        System.out.println("location " + llocation);
-
-        nlocation = new gpsLocation();
-
-        if (llocation != null) {
-            lastLocation = llocation.getLatitude() + "," + llocation.getLongitude();
-        }
-
-        mlocation.requestLocationUpdates(provider, 5000, 2, nlocation);
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -330,47 +304,5 @@ public class MainActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
-
-
-
-
-    private class gpsLocation implements LocationListener{
-
-        //all overriden method definitions are auto generated
-
-
-        @Override
-        public void onLocationChanged(Location location) {
-
-            lat=location.getLatitude();
-            lng=location.getLongitude();
-
-            latlng=lat+","+lng;
-            System.out.println("latlng"+latlng);
-            //Toast.makeText(null,latlng,Toast.LENGTH_LONG).show();
-
-
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-
-    }
-
-
-
 
 }
